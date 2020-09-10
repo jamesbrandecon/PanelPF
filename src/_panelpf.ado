@@ -1,3 +1,78 @@
+capture program drop panelpf
+program define panelpf
+syntax varlist [if], gmm_options(string)
+
+// Check if xtset
+capture xtset
+if _rc != 0 {
+	di as error "Data must be xtset before running panelpf"
+}
+
+tokenize `varlist'
+local y `1'
+macro shift 
+local x `*'
+gmm _panelpf2 `if', y("`y'") x("`x'") `gmm_options'
+end
+
+capture program drop _panelpf2
+program define _panelpf2
+syntax varlist [if], at(name) y(varlist) x(varlist)
+tempvar ly fy g lg fg
+tempvar e1 e2 e3 omega lomega fomega
+qui gen `g' = 0
+qui gen `lg' = 0
+qui gen `fg' = 0
+
+// Number of x variables
+local v "`x'"
+global count: word count `v'
+
+// Make lags and forwards,
+gen `fy' = f.`y'
+gen `ly' = l.`y'
+
+foreach i of numlist 1(1)$count {
+	tempvar lx_`i' fx_`i' x_`i'
+	local tvar: word `i' of `x'
+	local t "`tvar'"
+	qui gen `lx_`i'' = l.`t'
+	qui gen `x_`i'' = `t'
+	qui gen `fx_`i'' = f.`tvar'
+}
+
+
+// Initial values for parameters
+foreach i of numlist 1(1)$count {
+	tempname beta`i'
+	scalar `beta`i'' = `at'[1,`i']
+	qui replace `fg' = `fg' + `beta`i''*`fx_`i''
+	qui replace `g' = `g' + `beta`i''*`x_`i''
+	qui replace `lg' = `lg' + `beta`i''*`lx_`i''
+}
+tempname rho1 rho2
+local rstart $count
+scalar `rho1' = `at'[1,`rstart'+1]
+scalar `rho2' = `at'[1,`rstart'+2]
+
+// Compute omega for each period (conditional on parameter values)
+qui gen double `fomega' = `fy' - `fg' `if'
+qui gen double `omega' = `y' - `g' `if'
+qui gen double `lomega' = `ly' - `lg' `if'
+
+qui gen double `e1' = `fomega' - `rho1'*`omega'- `rho2'*`omega'^2 `if'
+qui sum `e1' `if'
+replace `e1' = `e1' - `r(mean)' `if'
+
+qui gen double `e2' = `e1'*`lomega' `if'
+qui gen double `e3' = `e1'*`lomega'^2 `if' 
+
+qui replace `1' = `e1' `if' // Productivity innovation t+1
+qui replace `2' = `e2' `if' // Enforcing first-order markov process
+qui replace `3' = `e3' `if' // Enforcing first-order markov process, quadratic term
+end
+
+
 capture program drop _panelpf
 program define _panelpf
 syntax varlist [if], at(name)

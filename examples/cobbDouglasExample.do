@@ -26,6 +26,8 @@ local betav = 0.8 // coefficient on "flexible input", chosen in period t
 local rho_1 = 0.95 // Linear term in Markov process
 local rho_2 = -0.025 // Quadratic term
 
+qui do _panelpf.ado
+
 // Loop over S simulation samples, storing estimates for each sample
 local S = 100
 foreach s of numlist 1(1)`S' {
@@ -64,7 +66,7 @@ keep if time>=8
 
 mat init = 0.5, 0.5, 1, 0
 }
-gmm _panelpf, from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50)
+panelpf y k v, gmm_options(from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50))
 
 mat b = e(b)
 local beta1`s' = b[1,1]
