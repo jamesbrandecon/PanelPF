@@ -5,11 +5,11 @@
 // (3) these relationships are not invertible, and 
 // (4) productivity follows a quadratic Markov process
 //
-// The program _panelIV.ado provides a new GMM estimator for the 
+// The program _panelpf.ado provides a new GMM estimator for the 
 // parameters of this model. 
 //
 // Note: Production function is Cobb-Douglas here. Translog can be
-// estimated using _panelIVTL
+// estimated using _panelpfTL
 //
 // Written by James Brand
 // Last Updated: July 6, 2020
@@ -64,7 +64,7 @@ keep if time>=8
 
 mat init = 0.5, 0.5, 1, 0
 }
-gmm _panelIV, from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50)
+gmm _panelpf, from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50)
 
 mat b = e(b)
 local beta1`s' = b[1,1]

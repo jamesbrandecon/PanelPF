@@ -1,5 +1,5 @@
-capture program drop _panelIV
-program define _panelIV
+capture program drop _panelpf
+program define _panelpf
 syntax varlist [if], at(name)
 tempvar e1 e2 e3 omega lomega fomega
 tempvar lv fv lk fk ly fy
@@ -30,8 +30,8 @@ qui replace `2' = `e2' `if' // Enforcing first-order markov process
 qui replace `3' = `e3' `if' // Enforcing first-order markov process, quadratic term
 end
 
-capture program drop _panelIVTL
-program define _panelIVTL
+capture program drop _panelpfTL
+program define _panelpfTL
 syntax varlist [if], at(name)
 tempvar e1 e2 e3 omega lomega fomega
 tempvar lv fv lk fk ly fy
