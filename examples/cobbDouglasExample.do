@@ -66,6 +66,8 @@ keep if time>=8
 
 mat init = 0.5, 0.5, 1, 0
 }
+// Note: estimating equation is in terms of f.y and (f.k f.v). Using k and v as instruments assumes lagged inputs are uncorrelated
+// with productivity innovation
 panelpf y k v, gmm_options(from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50))
 
 mat b = e(b)
