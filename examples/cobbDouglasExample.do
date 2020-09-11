@@ -8,11 +8,8 @@
 // The program _panelpf.ado provides a new GMM estimator for the 
 // parameters of this model. 
 //
-// Note: Production function is Cobb-Douglas here. Translog can be
-// estimated using _panelpfTL
-//
 // Written by James Brand
-// Last Updated: July 6, 2020
+// Last Updated: Sept 11, 2020
 // --------------------------------------------------------------
 
 
