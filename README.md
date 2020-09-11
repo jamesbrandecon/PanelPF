@@ -7,7 +7,7 @@ This is a dynamic panel estimator for a production function in which
 - No input is 1-to-1 with productivity, unconditionally or conditional on other inputs (i.e. traditional approaches to inverting out productivity are misspecified)
 
 ## Installation and Usage
-For now, download `_panelpf.ado`. For output y, inputs x, the basic syntax is `panelpf y x, start(name)` where `start()` contains a row matrix of starting values for the production function and quadratic Markov process. This syntax assumes you want to use simple default `gmm` options. You can also add `gmm_options()` which contains a different set of instruments for x and other options to pass to Stata’s `gmm` command. Either `start()` or `gmm_options()` with an initial value must be specified. 
+For now, download `_panelpf.ado`. For output y, inputs x, the basic syntax is `panelpf y x, start(name)` where `start()` contains a row matrix of starting values for the production function and quadratic Markov process. This syntax assumes you want to use lags of x as instruments and simple default `gmm` options. You can also add `gmm_options()` which contains a different set of instruments for x and other options to pass to Stata’s `gmm` command. Either `start()` or `gmm_options()` with an initial value must be specified. 
 
 Note: as described in the paper, the estimating equation for this command is in terms of f.y and f.x (i.e. everything is shifted forward a period). If using custom IVs, shift them accordingly (see example file). 
 
