@@ -1,17 +1,44 @@
 capture program drop panelpf
 program define panelpf
-syntax varlist [if], gmm_options(string)
+syntax varlist [if],  [start(name) gmm_options(string) iv(varlist)]
+
+if `"`gmm_options'"' == "" & `"`start'"' == "" {
+	di as error "You must specify a matrix of starting values using the start() or gmm_options() options"
+	exit
+}
+
+capture mat init = `start'
 
 // Check if xtset
 capture xtset
 if _rc != 0 {
 	di as error "Data must be xtset before running panelpf"
+	exit
 }
 
+// Extract y and x from varlist
 tokenize `varlist'
 local y `1'
 macro shift 
 local x `*'
+
+local v "`x'"
+global count: word count `v'
+
+// Set lags of x as default IVs 
+if `"`iv'"' == "" {
+	local iv = "`x'"
+}
+
+local nparam = $count + 2
+local neq = $count + 1
+
+// Give default options for stata's gmm command 
+if `"`gmm_options'"' == "" {
+	local gmm_options = "from(init) nparameters(`nparam') nequations(`neq') twostep instruments(1:`iv', nocons) winitial(identity) conv_maxiter(5000)"
+}
+di "Beginning two-step GMM estimation"
+
 gmm _panelpf2 `if', y("`y'") x("`x'") `gmm_options'
 end
 

@@ -29,7 +29,7 @@ local rho_2 = -0.025 // Quadratic term
 qui do _panelpf.ado
 
 // Loop over S simulation samples, storing estimates for each sample
-local S = 100
+local S = 1
 foreach s of numlist 1(1)`S' {
 clear
 qui {
@@ -64,11 +64,11 @@ gen y = `betak'*k + `betav'*v + omega + error
 // Restrict sample, make lags and forwards
 keep if time>=8
 
-mat init = 0.5, 0.5, 1, 0
+mat starting_value = 0.5, 0.5, 1, 0
 }
 // Note: estimating equation is in terms of f.y and (f.k f.v). Using k and v as instruments assumes lagged inputs are uncorrelated
 // with productivity innovation
-panelpf y k v, gmm_options(from(init) nparameters(4) nequations(3) twostep instruments(1:k v, nocons) winitial(identity) conv_maxiter(50))
+panelpf y k v, 
 
 mat b = e(b)
 local beta1`s' = b[1,1]
