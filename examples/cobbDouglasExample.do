@@ -29,7 +29,7 @@ local rho_2 = -0.025 // Quadratic term
 qui do _panelpf.ado
 
 // Loop over S simulation samples, storing estimates for each sample
-local S = 1
+local S = 100
 foreach s of numlist 1(1)`S' {
 clear
 qui {
@@ -68,7 +68,7 @@ mat starting_value = 0.5, 0.5, 1, 0
 }
 // Note: estimating equation is in terms of f.y and (f.k f.v). Using k and v as instruments assumes lagged inputs are uncorrelated
 // with productivity innovation
-panelpf y k v, 
+panelpf y k v, start(starting_value)
 
 mat b = e(b)
 local beta1`s' = b[1,1]
